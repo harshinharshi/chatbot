@@ -38,16 +38,6 @@ def main():
             
         except Exception as e:
             print(f"\nError: {str(e)}\n")
-    
-    # Print conversation summary when done
-    try:
-        graph_state = graph.get_state(config)
-        if 'summary' in graph_state.values and graph_state.values['summary']:
-            print("\n=== Conversation Summary ===")
-            print(graph_state.values['summary'])
-        print(f"\nTotal messages exchanged: {len(graph_state.values.get('messages', []))}")
-    except Exception as e:
-        print(f"\nCould not retrieve conversation summary: {str(e)}")
 
 if __name__ == "__main__":
     main()
