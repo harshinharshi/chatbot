@@ -1,6 +1,6 @@
-from typing import TypedDict, Annotated
-from langgraph.graph import add_messages
+from langgraph.graph import MessagesState
+from typing import Optional
 
-class BasicChatState(TypedDict):
-    """State definition for the basic chatbot."""
-    messages: Annotated[list, add_messages]
+class State(MessagesState): # inbuilt reducer function
+    """State model for the conversation system."""
+    summary: Optional[str] = ""
