@@ -9,31 +9,45 @@ def main():
     # Create a thread configuration
     config = {"configurable": {"thread_id": "1"}}
 
-    print("=== Conversation System Demo ===\n")
+    print("=== Interactive Chat System ===")
+    print("Type 'quit' to end the conversation.\n")
     
-    # Start conversation
-    messages_to_send = [
-        "hi! I'm Lance",
-        "what's my name?",
-        "i like Burgers!",
-        "KFC is the best"
-    ]
-    
-    for message_content in messages_to_send:
-        print(f"User: {message_content}")
-        input_message = HumanMessage(content=message_content)
-        output = graph.invoke({"messages": [input_message]}, config)
+    while True:
+        # Get user input
+        user_input = input("You: ").strip()
         
-        # Print the last message (model's response)
-        for m in output['messages'][-1:]:
-            m.pretty_print()
-        print("-" * 50)
+        # Check for exit condition
+        if user_input.lower() == 'quit':
+            print("\n=== Ending conversation ===")
+            break
+            
+        # Skip empty input
+        if not user_input:
+            continue
+            
+        try:
+            # Process the message
+            input_message = HumanMessage(content=user_input)
+            output = graph.invoke({"messages": [input_message]}, config)
+            
+            # Print the AI's response
+            print("\nAI:")
+            for m in output['messages'][-1:]:
+                print(m.content)
+            print("\n" + "-" * 50 + "\n")
+            
+        except Exception as e:
+            print(f"\nError: {str(e)}\n")
     
-    # Print final graph state
-    print("\n=== Final Graph State ===")
-    graph_state = graph.get_state(config)
-    print(f"Summary: {graph_state.values.get('summary', 'No summary yet')}")
-    print(f"Number of messages: {len(graph_state.values.get('messages', []))}")
+    # Print conversation summary when done
+    try:
+        graph_state = graph.get_state(config)
+        if 'summary' in graph_state.values and graph_state.values['summary']:
+            print("\n=== Conversation Summary ===")
+            print(graph_state.values['summary'])
+        print(f"\nTotal messages exchanged: {len(graph_state.values.get('messages', []))}")
+    except Exception as e:
+        print(f"\nCould not retrieve conversation summary: {str(e)}")
 
 if __name__ == "__main__":
     main()

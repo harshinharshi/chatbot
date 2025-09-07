@@ -1,4 +1,5 @@
-from langchain_core.messages import HumanMessage, RemoveMessage
+from typing import Dict, Any
+from langchain_core.messages import HumanMessage, RemoveMessage, AIMessage
 from langchain_groq import ChatGroq
 from src.models.state import State
 from src.config.settings import MODEL_NAME, MODEL_TEMPERATURE, MODEL_MAX_RETRIES
@@ -10,25 +11,60 @@ model = ChatGroq(
     max_retries=MODEL_MAX_RETRIES,
 )
 
-def summarize_conversation(state: State) -> dict:
-    """Summarize the conversation and remove old messages."""
-    # First, we get any existing summary
-    summary = state.get("summary", "")
-
-    # Create our summarization prompt 
-    if summary:
-        # A summary already exists
-        summary_message = (
-            f"This is summary of the conversation to date: {summary}\n\n"
-            "Extend the summary by taking into account the new messages above:"
+def summarize_conversation(state: State) -> Dict[str, Any]:
+    """
+    Summarize the conversation and maintain context by keeping recent messages.
+    
+    Args:
+        state: The current conversation state containing messages and summary
+        
+    Returns:
+        Dictionary with updated summary and messages
+    """
+    current_summary = state.get("summary", "")
+    messages = state["messages"]
+    
+    # Prepare the conversation context for summarization
+    conversation_context = "\n".join(
+        f"{msg.type}: {msg.content}" 
+        for msg in messages
+        if not isinstance(msg, (RemoveMessage,))
+    )
+    
+    # Create the summarization prompt
+    if current_summary:
+        prompt = (
+            f"Previous Summary: {current_summary}\n\n"
+            f"New Conversation Context:\n{conversation_context}\n\n"
+            "Please update the summary to include the new conversation context. "
+            "Focus on key points, decisions, and action items."
         )
     else:
-        summary_message = "Create a summary of the conversation above:"
-
-    # Add prompt to our history
-    messages = state["messages"] + [HumanMessage(content=summary_message)]
-    response = model.invoke(messages)
+        prompt = (
+            f"Please summarize the following conversation:\n\n{conversation_context}\n\n"
+            "Extract key points, decisions, and action items."
+        )
     
-    # Delete all but the 2 most recent messages
-    delete_messages = [RemoveMessage(id=m.id) for m in state["messages"][:-2]]
-    return {"summary": response.content, "messages": delete_messages}
+    # Get the summary from the model
+    response = model.invoke([HumanMessage(content=prompt)])
+    new_summary = response.content
+    
+    # Keep the last 2 messages for context
+    recent_messages = messages[-2:] if len(messages) > 2 else messages
+    
+    # Add a system message about the summarization
+    summary_message = AIMessage(
+        content=f"[System: The conversation has been summarized for context. {len(messages) - len(recent_messages)} previous messages were summarized.]"
+    )
+    
+    # Mark old messages for removal (except the ones we want to keep)
+    messages_to_remove = [
+        RemoveMessage(id=msg.id) 
+        for msg in messages 
+        if msg not in recent_messages
+    ]
+    
+    return {
+        "summary": new_summary,
+        "messages": messages_to_remove + [summary_message] + recent_messages
+    }
