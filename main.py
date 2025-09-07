@@ -1,8 +1,22 @@
 from langchain_core.messages import HumanMessage
 from src.graph.workflow import create_workflow
 
+def process_message(graph, config, user_input):
+    """Process a single message."""
+    input_message = HumanMessage(content=user_input)
+    output = graph.invoke(
+        {"messages": [input_message]}, 
+        config
+    )
+    
+    # Print the AI's response
+    print("\nAI:")
+    for m in output['messages'][-1:]:
+        print(m.content)
+    print("\n" + "-" * 50 + "\n")
+
 def main():
-    """Main function to demonstrate the conversation system."""
+    """Main function to run the conversation system."""
     # Create the workflow
     graph = create_workflow()
     
@@ -26,16 +40,7 @@ def main():
             continue
             
         try:
-            # Process the message
-            input_message = HumanMessage(content=user_input)
-            output = graph.invoke({"messages": [input_message]}, config)
-            
-            # Print the AI's response
-            print("\nAI:")
-            for m in output['messages'][-1:]:
-                print(m.content)
-            print("\n" + "-" * 50 + "\n")
-            
+            process_message(graph, config, user_input)
         except Exception as e:
             print(f"\nError: {str(e)}\n")
 
