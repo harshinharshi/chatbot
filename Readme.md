@@ -139,3 +139,17 @@ This will start a local server and provide you with a URL to view the studio.
 -   The project is structured for maintainability and testability.
 -   You can easily swap the LLM by modifying the `LLMManager` class in `src/llm.py`.
 -   The `main.py` script can be modified to create a more interactive chat experience.
+
+---
+
+## 🛣️ Roadmap
+
+### Completed
+
+-   [x] Some tools to do some specific task
+
+### In Progress
+
+-   [ ] Need short and longterm memory
+-   [ ] Human agent, if the ai failed to answer call human agent (human interupt)
+-   [ ] Need a personla info pdf and a rRAG to fetch the deteails
