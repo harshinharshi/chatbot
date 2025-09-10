@@ -1,6 +1,6 @@
-langgraph
 langchain-groq
+langgraph
 langchain-core
 python-dotenv
-typing-extensions
-langgraph-checkpoint-sqlite
+langgraph-cli[inmem]
+ipykernel
