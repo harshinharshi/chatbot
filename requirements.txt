@@ -1,8 +1,6 @@
-langgraph
 langchain-groq
+langgraph
+langchain-core
 python-dotenv
 langgraph-cli[inmem]
 ipykernel
-langgraph-prebuilt
-langchain-core
-langchain-community
