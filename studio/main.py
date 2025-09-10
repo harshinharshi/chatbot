@@ -29,7 +29,7 @@ llm_with_tools = llm.bind_tools(tools, parallel_tool_calls=False)
 # 4. LLM invoke function
 def assistant(state: MessagesState):
    system_message = SystemMessage(content="You are a helpful assistant. Use the tools when necessary. you have two tools: datetime_now, creator_info.")
-   return {"messages": [llm_with_tools.invoke(state["messages"])]}
+   return {"messages": [llm_with_tools.invoke([system_message] + state["messages"])]}
 
 # 5. Build the graph
 # which message class to use for the state
@@ -49,9 +49,3 @@ builder.add_conditional_edges(
 )
 builder.add_edge("tools", "assistant")
 react_graph = builder.compile()
-
-messages = [HumanMessage(content="what is the 2*10/5, also mention your creators details"),]
-messages = react_graph.invoke({"messages": messages})
-
-for m in messages['messages']:
-    m.pretty_print()
