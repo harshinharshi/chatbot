@@ -113,7 +113,7 @@ To add a new tool to the chatbot, follow these steps:
     ```python
     # src/tools.py
 
-    tools = [datetime_now, creator_info]
+    tools = [datetime_now, creator_info, my_new_tool]
     ```
 
 The chatbot will now have access to your new tool!
