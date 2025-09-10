@@ -127,7 +127,7 @@ This project is integrated with the Langgraph Studio, which allows you to visual
 To start the studio, run the following command in your terminal:
 
 ```bash
-langgraph up
+langgraph dev
 ```
 
 This will start a local server and provide you with a URL to view the studio.
