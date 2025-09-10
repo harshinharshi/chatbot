@@ -3,7 +3,7 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage
 from langgraph.graph import MessagesState
 from dotenv import load_dotenv
-from tools import tools
+from src.tools import tools
 
 # Load environment variables
 load_dotenv()
