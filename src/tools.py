@@ -8,7 +8,7 @@ def datetime_now() -> str:
 
 def creator_info() -> str:
     """Return information about your creator."""
-    return "Harshin"
+    return "Rasputin"
 
 
 # List of all available tools
