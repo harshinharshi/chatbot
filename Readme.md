@@ -11,7 +11,8 @@ chatbot/
 ├── src/
 │   ├── llm.py            # LLM initialization and management
 │   ├── graph.py          # ReAct graph construction and management
-│   └── tools.py          # Tool functions and tool list
+│   ├── tools.py          # Tool functions and tool list
+│   └── database.py       # Short-term memory implementation
 ├── test/
 │   └── langgraph_studio.py # Langgraph studio configuration
 ├── .env.example      # Environment variables template
@@ -29,6 +30,7 @@ chatbot/
 - **Environment-Based Configuration:** Sensitive information and model configurations are managed through environment variables, ensuring that no sensitive data is hard-coded.
 - **Extensible Tool System:** New tools can be easily added by defining a function and adding it to the `tools` list in `src/tools.py`.
 - **ReAct Agent:** The project uses a ReAct (Reasoning and Acting) agent, which can reason about problems and use tools to solve them.
+- **Short-Term Memory:** The chatbot maintains conversation context using SQLite-based short-term memory. See `src/database.py` for implementation details.
 - **Langgraph Studio Integration:** The project is configured to work with the Langgraph Studio for debugging and visualizing the agent's behavior.
 
 ---
@@ -77,10 +79,11 @@ python main.py
 
 ## 📝 File Overview
 
--   **`main.py`**: The entry point of the application. It initializes the `ReActGraph` and sends a sample message to it.
+-   **`main.py`**: The entry point of the application. It initializes the `ReActGraph` and manages the conversation loop.
 -   **`src/llm.py`**: This file contains the `LLMManager` class, which is responsible for initializing the `ChatGroq` model, binding the tools to it, and defining the `assistant` function that is called by the graph.
 -   **`src/graph.py`**: This file contains the `ReActGraph` class, which builds and manages the ReAct agent using `langgraph`. It defines the nodes (assistant, tools) and edges of the graph.
 -   **`src/tools.py`**: This file defines the tools that the agent can use. Currently, it includes `datetime_now` and `creator_info`.
+-   **`src/database.py`**: This file implements the short-term memory system using SQLite to persist conversation state across interactions.
 -   **`test/langgraph_studio.py`**: This file is used to configure the Langgraph Studio. It imports the `ReActGraph` and makes it available to the studio.
 -   **`requirements.txt`**: This file lists all the Python dependencies of the project.
 -   **`.env.example`**: A template for the environment variables.
@@ -139,6 +142,7 @@ This will start a local server and provide you with a URL to view the studio.
 -   The project is structured for maintainability and testability.
 -   You can easily swap the LLM by modifying the `LLMManager` class in `src/llm.py`.
 -   The `main.py` script can be modified to create a more interactive chat experience.
+-   Short-term memory is implemented using SQLite in `src/database.py`, which persists conversation context.
 
 ---
 
@@ -147,9 +151,9 @@ This will start a local server and provide you with a URL to view the studio.
 ### Completed
 
 -   [x] Some tools to do some specific task
+-   [x] Need short and longterm memory
 
 ### In Progress
 
--   [ ] Need short and longterm memory
 -   [ ] Human agent, if the ai failed to answer call human agent (human interupt)
 -   [ ] Need a personla info pdf and a rRAG to fetch the deteails
