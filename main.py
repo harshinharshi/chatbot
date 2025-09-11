@@ -30,10 +30,7 @@ def main():
 
         # Invoke the graph
         result = react_graph.invoke(messages, config)
-
-        # Print results
-        for message in result['messages'][1:]:  # Skip the first message which is the user input
-            message.pretty_print()
+        print('AI: ', result['messages'][-1].content)
         print("-" * 40)
 
 
