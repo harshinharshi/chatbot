@@ -2,6 +2,7 @@ from langgraph.graph import MessagesState, START, StateGraph
 from langgraph.prebuilt import tools_condition, ToolNode
 from src.llm import LLMManager
 from src.tools import tools
+from src.database import get_memory
 
 
 class ReActGraph:
@@ -14,6 +15,7 @@ class ReActGraph:
         """Build and compile the ReAct graph."""
         # Initialize the state graph
         builder = StateGraph(MessagesState)
+        memory = get_memory()
         
         # Define nodes
         builder.add_node("assistant", self.llm_manager.assistant)
@@ -29,11 +31,11 @@ class ReActGraph:
         )
         builder.add_edge("tools", "assistant")
         
-        return builder.compile()
+        return builder.compile(checkpointer=memory)
     
-    def invoke(self, messages):
+    def invoke(self, messages, config):
         """Invoke the graph with given messages."""
-        return self.graph.invoke({"messages": messages})
+        return self.graph.invoke({"messages": messages}, config)
     
     def get_graph(self):
         """Return the compiled graph."""
